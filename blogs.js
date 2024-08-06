@@ -1,5 +1,51 @@
 function findTitlesPublishedOn(date, blogPostTitles) {
   //It should return all blog posts titles that were published on a specified date using binary search
+
+  const searchDate = new Date(date);
+
+  blogPostTitles.sort(
+    (a, b) => new Date(a.published_on) - new Date(b.published_on)
+  );
+
+  function binarySearch() {
+    let left = 0;
+    let right = blogPostTitles.length - 1;
+    let result = [];
+
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      const midDate = new Date(blogPostTitles[mid].published_on);
+
+      if (midDate.getTime() === searchDate.getTime()) {
+        let i = mid;
+        while (
+          i >= 0 &&
+          new Date(blogPostTitles[i].published_on).getTime() ===
+            searchDate.getTime()
+        ) {
+          result.push(blogPostTitles[i].title);
+          i--;
+        }
+        i = mid + 1;
+        while (
+          i < blogPostTitles.length &&
+          new Date(blogPostTitles[i].published_on).getTime() ===
+            searchDate.getTime()
+        ) {
+          result.push(blogPostTitles[i].title);
+          i++;
+        }
+        return result;
+      } else if (midDate < searchDate) {
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+    return result;
+  }
+
+  return binarySearch();
 }
 
 const blogPostTitles = [
@@ -191,3 +237,7 @@ const blogPostTitles = [
     published_on: "2026-12-01T12:00:00Z",
   },
 ];
+
+const targetDate = "2024-03-05T23:00:00Z";
+
+console.log(findTitlesPublishedOn(targetDate, blogPostTitles));
